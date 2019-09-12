@@ -5,7 +5,8 @@ class EmitChangedOnlyPlugin {
   constructor(settings = {}) {
     this.settings = {
       splitChunks: true,
-      alwaysOverwrite: ["index.html"]
+      alwaysOverwrite: ["index.html"],
+      production: true
     };
 
     Object.assign(this.settings, settings);
