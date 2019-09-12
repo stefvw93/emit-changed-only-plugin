@@ -1,0 +1,18 @@
+{
+  "name": "emit-changed-only-plugin",
+  "version": "1.0.0",
+  "description": "Webpack plugin to only emit changed files.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "emit",
+    "changed",
+    "only",
+    "plugin",
+    "webpack"
+  ],
+  "author": "Stef van Wijchen",
+  "license": "ISC"
+}
