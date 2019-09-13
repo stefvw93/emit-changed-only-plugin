@@ -1,15 +1,12 @@
 {
-  "name": "emit-changed-only-plugin",
-  "version": "1.1.9",
+  "name": "emit-changed-only-webpack-plugin",
+  "version": "1.1.11",
   "description": "Webpack plugin to only emit changed files.",
   "main": "./dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/stefvw93/emit-changed-only-plugin"
+    "url": "https://github.com/stefvw93/emit-changed-only-webpack-plugin"
   },
-  "files": [
-    "./dist/*.*"
-  ],
   "scripts": {
     "prepublishOnly": "npm run build",
     "build": "tsc"

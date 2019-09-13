@@ -1,4 +1,4 @@
-# emit-changed-only-plugin
+# emit-changed-only-webpack-plugin
 
 Webpack production plugin to only emit changed files.
 
@@ -17,7 +17,7 @@ Important! Use the webpack substitute `[contenthash]` in your filename. This is 
 ```javascript
 // webpack.production.js
 
-const EmitChangedOnlyPlugin = require("emit-changed-only-plugin");
+const EmitChangedOnlyPlugin = require("emit-changed-only-webpack-plugin");
 
 module.exports = {
   mode: "production",
