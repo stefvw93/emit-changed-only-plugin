@@ -2,13 +2,13 @@ import fs from "fs";
 import path from "path";
 import webpack from "webpack";
 
-export type Settings = {
+type Settings = {
   alwaysOverwrite?: string[];
   production?: boolean;
   splitChunks?: boolean;
 };
 
-export class EmitChangedOnlyPlugin {
+class EmitChangedOnlyPlugin {
   private static readonly defaultSettings: Settings = {
     splitChunks: true,
     alwaysOverwrite: ["index.html"],
@@ -85,4 +85,4 @@ export class EmitChangedOnlyPlugin {
   }
 }
 
-module.exports = EmitChangedOnlyPlugin;
+export default EmitChangedOnlyPlugin;
