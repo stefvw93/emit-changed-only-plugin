@@ -85,4 +85,4 @@ class EmitChangedOnlyPlugin {
   }
 }
 
-export default EmitChangedOnlyPlugin;
+module.exports = EmitChangedOnlyPlugin;
