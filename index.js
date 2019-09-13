@@ -69,5 +69,6 @@ define("index", ["require", "exports", "fs", "path"], function (require, exports
         };
         return EmitChangedOnlyPlugin;
     }());
+    exports.EmitChangedOnlyPlugin = EmitChangedOnlyPlugin;
     module.exports = EmitChangedOnlyPlugin;
 });

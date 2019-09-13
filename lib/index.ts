@@ -2,12 +2,13 @@ import fs from "fs";
 import path from "path";
 import webpack from "webpack";
 
-type Settings = {
+export type Settings = {
   alwaysOverwrite?: string[];
   production?: boolean;
   splitChunks?: boolean;
 };
-class EmitChangedOnlyPlugin {
+
+export class EmitChangedOnlyPlugin {
   private static readonly defaultSettings: Settings = {
     splitChunks: true,
     alwaysOverwrite: ["index.html"],
