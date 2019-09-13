@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "./lib/index.ts",
   "scripts": {
-    "build": "tsc --declaration"
+    "build": "tsc"
   },
   "keywords": [
     "emit",
