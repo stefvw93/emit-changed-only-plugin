@@ -42,7 +42,7 @@ module.exports = {
   },
   plugins: [
     new EmitChangedOnlyPlugin({
-      alwaysOverwrite: /\.html/i
+      exclude: /\.html/i
     })
   ]
 };
