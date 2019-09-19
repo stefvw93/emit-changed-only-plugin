@@ -4,14 +4,17 @@ import webpack from "webpack";
 
 type Settings = {
   alwaysOverwrite?: string | RegExp;
+  exclude?: string | RegExp;
   production?: boolean;
   splitChunks?: boolean;
+  test?: string | RegExp;
 };
 
 class EmitChangedOnlyPlugin {
   private static readonly defaultSettings: Settings = {
     splitChunks: true,
-    production: true
+    production: true,
+    test: /\.js/i
   };
 
   private readonly settings: Settings = EmitChangedOnlyPlugin.defaultSettings;
@@ -20,8 +23,18 @@ class EmitChangedOnlyPlugin {
     Object.assign(this.settings, settings);
   }
 
+  private isMatch(filename: string, to?: string | RegExp): boolean {
+    return !to || (!!to && !!filename.match(to));
+  }
+
   apply(compiler: webpack.Compiler) {
-    const { production, splitChunks, alwaysOverwrite } = this.settings;
+    const {
+      production,
+      splitChunks,
+      alwaysOverwrite,
+      test,
+      exclude
+    } = this.settings;
     const optimization = compiler.options.optimization || {};
     const output = compiler.options.output || {};
     const mode = compiler.options.mode || "production";
@@ -57,35 +70,47 @@ class EmitChangedOnlyPlugin {
       handledAssets = assets;
 
       // remove assets if they should always be overwritten, or if the file already exists
-      distributedFiles
-        .filter(file => {
-          const shouldBeOverwritten =
-            !!alwaysOverwrite && !!file.match(alwaysOverwrite);
-          const identicalFileExists = assets.indexOf(file) > -1;
-          return shouldBeOverwritten || identicalFileExists;
-        })
-        .forEach(file => delete compilation.assets[file]);
+      const assetsToIgnore = distributedFiles.filter(file => {
+        const applyPluginToFile = this.isMatch(file, test);
+        const excludeFile = this.isMatch(file, exclude);
+        const alwaysOverwriteFile = this.isMatch(file, alwaysOverwrite);
+        const identicalFileExists = assets.indexOf(file) > -1;
+
+        if (!applyPluginToFile || excludeFile || alwaysOverwriteFile) {
+          return false;
+        }
+
+        return identicalFileExists;
+      });
+
+      assetsToIgnore.forEach(file => delete compilation.assets[file]);
     });
 
     // https://webpack.js.org/api/compiler-hooks/#done
     compiler.hooks.done.tap("EmitChangedOnlyPlugin", () => {
       // clean unused files from previous build
-      distributedFiles
-        .filter(file => {
-          const shouldKeep = !!alwaysOverwrite && !!file.match(alwaysOverwrite);
-          const isAsset = handledAssets.indexOf(file) > -1;
-          if (shouldKeep) return false;
-          return !isAsset;
-        })
-        .forEach(file => {
-          try {
-            fs.unlinkSync(path.join(outDir, file));
-          } catch (error) {
-            console.log(
-              `EmitChangedOnlyPlugin could not unlink ${outDir}/${file}`
-            );
-          }
-        });
+      const filesToUnlink = distributedFiles.filter(file => {
+        const applyPluginToFile = this.isMatch(file, test);
+        const excludeFile = this.isMatch(file, exclude);
+        const alwaysOverwriteFile = this.isMatch(file, alwaysOverwrite);
+        const isAsset = handledAssets.indexOf(file) > -1;
+
+        if (!applyPluginToFile || excludeFile || !alwaysOverwriteFile) {
+          return false;
+        }
+
+        return !isAsset;
+      });
+
+      filesToUnlink.forEach(file => {
+        try {
+          fs.unlinkSync(path.join(outDir, file));
+        } catch (error) {
+          console.log(
+            `EmitChangedOnlyPlugin could not unlink ${outDir}/${file}`
+          );
+        }
+      });
 
       if (output.filename!.indexOf("[contenthash") < -1) {
         console.log(
