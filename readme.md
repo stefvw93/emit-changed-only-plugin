@@ -20,32 +20,32 @@ Important! Use the webpack substitute `[contenthash]` in your filename. This is 
 const EmitChangedOnlyPlugin = require("emit-changed-only-webpack-plugin");
 
 module.exports = {
-  mode: "production",
-  context: "./src",
-  entry: "index.js",
+  // ... webpack config
+
   output: {
     path: "./dist",
     /**
-     * !!! You should add the content hash substitute to your filename !!!
+     * Use a hashed webpack substitute to generate a filename.
+     * [contenthash] is recommended because the hash represents file contents.
      */
     filename: "[name].[contenthash].js"
   },
-
-  /**
-   * Plugin is over here! vvv
-   */
-  plugins: [new EmitChangedOnlyPlugin()]
+  plugins: [
+    new EmitChangedOnlyPlugin({
+      alwaysOverwrite: /\.html/i
+    })
+  ]
 };
 ```
 
 ### Settings
 
 You can pass some settings, but this should generally not be necessary.
-|Name|Type|Description
-|-|-|-|
-|alwaysOverwrite|Array\<string\>|File(names) to always overwrite|
-|production|Boolean|Set to false to use outside of production mode|
-|splitChunks|Boolean|Set to false to not split into chunks (not recommended)|
+|Name|Type|Description|Default
+|-|-|-|-|
+|alwaysOverwrite|string \| RegExp|Matches will alway be emitted|undefined
+|production|boolean|Require webpack production mode|true
+|splitChunks|boolean|Use chunk splitting (recommended)|true
 
 Settings example:
 
