@@ -11,7 +11,6 @@ type Settings = {
 class EmitChangedOnlyPlugin {
   private static readonly defaultSettings: Settings = {
     splitChunks: true,
-    alwaysOverwrite: /\.html/i,
     production: true
   };
 
@@ -60,7 +59,8 @@ class EmitChangedOnlyPlugin {
       // remove assets if they should always be overwritten, or if the file already exists
       distributedFiles
         .filter(file => {
-          const shouldBeOverwritten = !!file.match(alwaysOverwrite!);
+          const shouldBeOverwritten =
+            !!alwaysOverwrite && !!file.match(alwaysOverwrite);
           const identicalFileExists = assets.indexOf(file) > -1;
           return shouldBeOverwritten || identicalFileExists;
         })
@@ -72,7 +72,7 @@ class EmitChangedOnlyPlugin {
       // clean unused files from previous build
       distributedFiles
         .filter(file => {
-          const shouldKeep = !!file.match(alwaysOverwrite!);
+          const shouldKeep = !!alwaysOverwrite && !!file.match(alwaysOverwrite);
           const isAsset = handledAssets.indexOf(file) > -1;
           if (shouldKeep) return false;
           return !isAsset;
