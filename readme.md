@@ -57,4 +57,8 @@ You can pass some settings, but this should generally not be necessary.
 |production|boolean|Require webpack production mode|true
 |splitChunks|boolean|Use chunk splitting (recommended)|true
 |test|string \| RegExp|Apply the plugin to matched filenames|/\\.js/i
-|exclude|string \| RegExp|Plugin won't be applied to matched filenames|undefined
+|exclude|string \| RegExp|The plugin won't do anything to the matched filenames|undefined
+
+## Note
+
+The plugin will attempt to keep your distribution directory clean, by removing outdated, previously built files. So you won't have to - and should not - clear your distribution directory. To keep certain files from being deleted, you can add them to the `exclude` setting.
