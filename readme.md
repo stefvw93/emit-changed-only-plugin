@@ -46,12 +46,3 @@ You can pass some settings, but this should generally not be necessary.
 |alwaysOverwrite|string \| RegExp|Matches will alway be emitted|undefined
 |production|boolean|Require webpack production mode|true
 |splitChunks|boolean|Use chunk splitting (recommended)|true
-
-Settings example:
-
-```javascript
-new EmitChangedOnlyPlugin({
-  splitChunks: false,
-  alwaysOverwrite: ["index.html", "style.css"]
-});
-```
