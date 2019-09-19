@@ -54,10 +54,10 @@ You can pass some settings, but this should generally not be necessary.
 |Name|Type|Description|Default
 |-|-|-|-|
 |alwaysOverwrite|string \| RegExp|Matches will alway be emitted|undefined
+|exclude|string \| RegExp|The plugin won't do anything to the matched filenames|undefined
 |production|boolean|Require webpack production mode|true
 |splitChunks|boolean|Use chunk splitting (recommended)|true
 |test|string \| RegExp|Apply the plugin to matched filenames|/\\.js/i
-|exclude|string \| RegExp|The plugin won't do anything to the matched filenames|undefined
 
 ## Note
 
