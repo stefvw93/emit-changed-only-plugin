@@ -3,7 +3,7 @@ import path from "path";
 import webpack from "webpack";
 
 type Settings = {
-  alwaysOverwrite?: string[];
+  alwaysOverwrite?: string | RegExp;
   production?: boolean;
   splitChunks?: boolean;
 };
@@ -11,7 +11,7 @@ type Settings = {
 class EmitChangedOnlyPlugin {
   private static readonly defaultSettings: Settings = {
     splitChunks: true,
-    alwaysOverwrite: ["index.html"],
+    alwaysOverwrite: /\.html/i,
     production: true
   };
 
@@ -51,17 +51,19 @@ class EmitChangedOnlyPlugin {
 
     // https://webpack.js.org/api/compiler-hooks/#emit
     compiler.hooks.emit.tap("EmitChangedOnlyPlugin", compilation => {
+      // get assets
       const assets = Object.keys(compilation.assets);
 
       //  keep a back-up of compiled assets for 'done' hook
       handledAssets = assets;
 
-      // remove assets if they whould always be overwritten, or if the file already exists
+      // remove assets if they should always be overwritten, or if the file already exists
       distributedFiles
-        .filter(
-          file =>
-            alwaysOverwrite!.indexOf(file) < 0 && assets.indexOf(file) > -1
-        )
+        .filter(file => {
+          const shouldBeOverwritten = !!file.match(alwaysOverwrite!);
+          const identicalFileExists = assets.indexOf(file) > -1;
+          return shouldBeOverwritten || identicalFileExists;
+        })
         .forEach(file => delete compilation.assets[file]);
     });
 
@@ -70,10 +72,19 @@ class EmitChangedOnlyPlugin {
       // clean unused files from previous build
       distributedFiles
         .filter(file => {
-          return handledAssets.indexOf(file) < 0;
+          const shouldKeep = !!file.match(alwaysOverwrite!);
+          const isAsset = handledAssets.indexOf(file) > -1;
+          if (shouldKeep) return false;
+          return !isAsset;
         })
         .forEach(file => {
-          fs.unlinkSync(path.join(outDir, file));
+          try {
+            fs.unlinkSync(path.join(outDir, file));
+          } catch (error) {
+            console.log(
+              `EmitChangedOnlyPlugin could not unlink ${outDir}/${file}`
+            );
+          }
         });
 
       if (output.filename!.indexOf("[contenthash") < -1) {
