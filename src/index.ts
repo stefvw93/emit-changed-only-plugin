@@ -23,8 +23,12 @@ class EmitChangedOnlyPlugin {
     Object.assign(this.settings, settings);
   }
 
-  private isMatch(filename: string, to?: string | RegExp): boolean {
-    return !to || (!!to && !!filename.match(to));
+  private isMatch(
+    filename: string,
+    to?: string | RegExp,
+    toRequired = false
+  ): boolean {
+    return (toRequired ? !!to : !to) || (!!to && !!filename.match(to));
   }
 
   apply(compiler: webpack.Compiler) {
@@ -72,10 +76,11 @@ class EmitChangedOnlyPlugin {
       // remove assets if they should always be overwritten, or if the file already exists
       const assetsToIgnore = distributedFiles.filter(file => {
         const applyPluginToFile = this.isMatch(file, test);
-        const excludeFile = this.isMatch(file, exclude);
+        const excludeFile = this.isMatch(file, exclude, true);
         const alwaysOverwriteFile = this.isMatch(file, alwaysOverwrite);
         const identicalFileExists = assets.indexOf(file) > -1;
 
+        console.log(exclude);
         if (!applyPluginToFile || excludeFile || alwaysOverwriteFile) {
           return false;
         }
@@ -91,9 +96,16 @@ class EmitChangedOnlyPlugin {
       // clean unused files from previous build
       const filesToUnlink = distributedFiles.filter(file => {
         const applyPluginToFile = this.isMatch(file, test);
-        const excludeFile = this.isMatch(file, exclude);
+        const excludeFile = this.isMatch(file, exclude, true);
         const alwaysOverwriteFile = this.isMatch(file, alwaysOverwrite);
         const isAsset = handledAssets.indexOf(file) > -1;
+
+        console.log("\n" + file, {
+          applyPluginToFile,
+          excludeFile,
+          alwaysOverwriteFile,
+          isAsset
+        });
 
         if (!applyPluginToFile || excludeFile || !alwaysOverwriteFile) {
           return false;
@@ -102,6 +114,7 @@ class EmitChangedOnlyPlugin {
         return !isAsset;
       });
 
+      console.log("files to unlink", filesToUnlink);
       filesToUnlink.forEach(file => {
         try {
           fs.unlinkSync(path.join(outDir, file));

@@ -4,7 +4,7 @@ Webpack production plugin to only emit changed files.
 
 Why?
 
-When your app bundle is overwritten - even when maintaining the same file name - the server might see the file is changed (e.g. by modified date). A client browser will request the file and the server will tell the browser that the file changed. Which results in the browser redownloading the file and thus your javascript will have to recompile or serialize your js, every time the app is started.
+When your app bundle is overwritten - even when maintaining the same file name - the server might see the file is changed (e.g. by modified date). A client browser will request the file and the server will tell the browser that the file changed. Which results in the browser downloading, interpreting and compiling your JS, every time the app is started.
 
 See https://v8.dev/blog/code-caching-for-devs.
 
