@@ -3,7 +3,6 @@ import path from "path";
 import webpack from "webpack";
 
 type Settings = {
-  alwaysOverwrite?: string | RegExp;
   exclude?: string | RegExp;
   production?: boolean;
   splitChunks?: boolean;
@@ -28,17 +27,12 @@ class EmitChangedOnlyPlugin {
     to?: string | RegExp,
     toRequired = false
   ): boolean {
-    return (toRequired ? !!to : !to) || (!!to && !!filename.match(to));
+    if (toRequired && !to) return false;
+    return !to || (!!to && !!filename.match(to));
   }
 
   apply(compiler: webpack.Compiler) {
-    const {
-      production,
-      splitChunks,
-      alwaysOverwrite,
-      test,
-      exclude
-    } = this.settings;
+    const { production, splitChunks, test, exclude } = this.settings;
     const optimization = compiler.options.optimization || {};
     const output = compiler.options.output || {};
     const mode = compiler.options.mode || "production";
@@ -73,15 +67,13 @@ class EmitChangedOnlyPlugin {
       //  keep a back-up of compiled assets for 'done' hook
       handledAssets = assets;
 
-      // remove assets if they should always be overwritten, or if the file already exists
+      // remove assets if they should be excluded, or if the file already exists
       const assetsToIgnore = distributedFiles.filter(file => {
         const applyPluginToFile = this.isMatch(file, test);
         const excludeFile = this.isMatch(file, exclude, true);
-        const alwaysOverwriteFile = this.isMatch(file, alwaysOverwrite);
         const identicalFileExists = assets.indexOf(file) > -1;
 
-        console.log(exclude);
-        if (!applyPluginToFile || excludeFile || alwaysOverwriteFile) {
+        if (!applyPluginToFile || excludeFile) {
           return false;
         }
 
@@ -97,17 +89,19 @@ class EmitChangedOnlyPlugin {
       const filesToUnlink = distributedFiles.filter(file => {
         const applyPluginToFile = this.isMatch(file, test);
         const excludeFile = this.isMatch(file, exclude, true);
-        const alwaysOverwriteFile = this.isMatch(file, alwaysOverwrite);
         const isAsset = handledAssets.indexOf(file) > -1;
 
         console.log("\n" + file, {
           applyPluginToFile,
           excludeFile,
-          alwaysOverwriteFile,
           isAsset
         });
 
-        if (!applyPluginToFile || excludeFile || !alwaysOverwriteFile) {
+        // main.e2922c589beae196a5e8.js { applyPluginToFile: true,
+        //   excludeFile: false,
+        //   isAsset: false }
+
+        if (!applyPluginToFile || excludeFile) {
           return false;
         }
 
