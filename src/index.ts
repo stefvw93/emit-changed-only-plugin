@@ -80,7 +80,9 @@ class EmitChangedOnlyPlugin {
         return identicalFileExists;
       });
 
-      assetsToIgnore.forEach(file => delete compilation.assets[file]);
+      assetsToIgnore.forEach(file => {
+        delete compilation.assets[file];
+      });
     });
 
     // https://webpack.js.org/api/compiler-hooks/#done
@@ -91,16 +93,6 @@ class EmitChangedOnlyPlugin {
         const excludeFile = this.isMatch(file, exclude, true);
         const isAsset = handledAssets.indexOf(file) > -1;
 
-        console.log("\n" + file, {
-          applyPluginToFile,
-          excludeFile,
-          isAsset
-        });
-
-        // main.e2922c589beae196a5e8.js { applyPluginToFile: true,
-        //   excludeFile: false,
-        //   isAsset: false }
-
         if (!applyPluginToFile || excludeFile) {
           return false;
         }
@@ -108,7 +100,6 @@ class EmitChangedOnlyPlugin {
         return !isAsset;
       });
 
-      console.log("files to unlink", filesToUnlink);
       filesToUnlink.forEach(file => {
         try {
           fs.unlinkSync(path.join(outDir, file));
