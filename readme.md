@@ -51,6 +51,7 @@ module.exports = {
 ### Settings
 
 You can pass some settings, but this should generally not be necessary.
+
 |Name|Type|Description|Default
 |-|-|-|-|
 |alwaysOverwrite|string \| RegExp|Matches will alway be emitted|undefined
