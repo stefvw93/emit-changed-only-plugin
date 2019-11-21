@@ -1,6 +1,6 @@
 {
   "name": "emit-changed-only-webpack-plugin",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Webpack plugin to only emit changed files.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
