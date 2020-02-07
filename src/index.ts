@@ -36,7 +36,7 @@ class EmitChangedOnlyPlugin {
     const optimization = compiler.options.optimization || {};
     const output = compiler.options.output || {};
     const mode = compiler.options.mode || "production";
-    let handledAssets: string[];
+    let handledAssets: string[] = [];
 
     if (!output || !output.path || !output.filename) {
       return;
@@ -110,7 +110,7 @@ class EmitChangedOnlyPlugin {
         }
       });
 
-      if (output.filename!.indexOf("[contenthash") < -1) {
+      if (output.filename && output.filename.indexOf("[contenthash") < -1) {
         console.log(
           "EmitChangedOnlyPlugin: Using [contenthash] substitute in filename is recommended!"
         );
